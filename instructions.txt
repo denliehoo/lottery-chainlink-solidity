@@ -1,0 +1,35 @@
+1. truffle unbox smartcontractkit/box
+-> gives boiler plate code such as: 
+    -> e.g. PriceConsumerV3 for data feeds
+    -> MyContract for API Calls
+    -> RandomNumberConsumer for random number generator
+    -> migrations folders, scripts, testing, etc...
+-> create a .env file (see .env.example) and place the env variable such a mnemoic (the seed phrase e.g. cat dog run….) and the RPC url
+    -> if dont have a mnemoic: npx mnemonics to get the seed phrase
+    -> Get the RPC url from infura/speedynodes/moralis/etc [Note: best to use infura wss:// RPC urls]
+    -> place the seedphrase and rpc url in the .env file. 
+    -> Remember to put that file in .gitignore 
+    e.g. in .env file
+    MNEMONIC="cat dog ....."
+    RPC_URL="wss://kovan.infura.io/ws/v3/123abc......"
+
+2. npm install   // install all dependencies e.g. @truffle/hdwallet-provider, dotenv ,...
+3. Delete the unnecessary boiler plate code and start coding....
+4. truffle console --network kovan   //(or whatever network)
+    await web3.eth.getAccounts()    // gives you you the accounts for that seedphrase generated
+        // 0x62C398D2208052c6c8452B97C181bCd01786cC89
+    Note: you can only do the above two once you input the seedphrase and RPC url into the .env file. 
+    This is because truffle-config.js uses the seedphrase and RPC url to "connect" to the blockchain with that wallet
+    Think of it as using metamask through CLI
+    hdwallet-provider is basically the wallet and we input our seedphrase in it to 'use' the wallet
+5. Fund the wallet (send funds to it / get from faucets)
+    await web3.eth.getBalance('0x62C398D2208052c6c8452B97C181bCd01786cC89') // to get the ETH balance OR
+    await web3.eth.getBalance(accounts[0])
+6. truffle migrate --network kovan --reset  // this deploys the contracts to network
+Note: had to manually code the onlyOwner modifier. This was because of diff solidity versions for OpenZeppelin
+
+
+7. We can also do tests (in the tests folder) and this tests will be done on a local blockchain (ganache). Hence,
+deployment will be faster (no blocks need to be mined) and you instantly get test ETH e.g.
+truffle exec scripts/price-consumer-scripts/get-latest-price.js --network kovan
+
