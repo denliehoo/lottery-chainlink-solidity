@@ -48,7 +48,7 @@ contract('Lottery', accounts => {
             lottery.enter({ from: player3, value: entranceFee.toString() })
             // here we are sending 1LINK actually although the units is till in ether i.e. 10**18
             await link.transfer(lottery.address, web3.utils.toWei('1', 'ether'), { from: defaultAccount })
-            let transaction = await lottery.endLottery(seed, { from: defaultAccount })
+            let transaction = await lottery.endLottery({ from: defaultAccount })
             // this is the third log that is emitted because the chainlink contract also emits logs
             let requestId = transaction.receipt.rawLogs[3].topics[0]
 

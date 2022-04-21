@@ -75,20 +75,18 @@ contract Lottery is VRFConsumerBase {
         lotteryState = LotteryState.OPEN;
     }
 
-    function endLottery(uint256 userProvidedSeed) public onlyOwner {
+    function endLottery() public onlyOwner {
         require(lotteryState == LotteryState.OPEN, "Can't end lottery yet");
         lotteryState = LotteryState.CALCULATING_WINNER;
-        pickWinner(userProvidedSeed);
+        _pickWinner();
     }
 
-    function pickWinner(uint256 userProvidedSeed) private returns (bytes32) {
+    function _pickWinner() private returns (bytes32) {
         require(
             lotteryState == LotteryState.CALCULATING_WINNER,
             "Need to be calculating winner"
         );
         // function is from VRFConsumerBase chainlink import
-        // lecturer inputted 1 more param: userProvidedSeed, but gave an error -cross check with docs that its not required
-        //https://docs.chain.link/docs/chainlink-vrf-api-reference/v1/#:~:text=requestrandomness
         bytes32 requestId = requestRandomness(keyHash, fee);
         emit RequestedRandomness(requestId);
     }
@@ -99,11 +97,20 @@ contract Lottery is VRFConsumerBase {
     {
         require(randomness > 0, "random number not found");
         uint256 index = randomness % players.length; // the remaining will be 0 to (total players - 1)
-        players[index].transfer(address(this).balance); //sends the address all the ETH in the smart contract
+        recentWinner = players[index];
+        address payable recentWinnerAddress = players[index];
         lotteryState = LotteryState.CLOSED;
         randomness = randomness;
-        recentWinner = players[index];
         players = new address payable[](0);
+        recentWinnerAddress.transfer(address(this).balance); //sends the address all the ETH in the smart contract
+
+        // require(randomness > 0, "random number not found");
+        // uint256 index = randomness % players.length; // the remaining will be 0 to (total players - 1)
+        // players[index].transfer(address(this).balance); //sends the address all the ETH in the smart contract
+        // lotteryState = LotteryState.CLOSED;
+        // randomness = randomness;
+        // recentWinner = players[index];
+        // players = new address payable[](0);
     }
 
     modifier onlyOwner() {
@@ -111,3 +118,5 @@ contract Lottery is VRFConsumerBase {
         _;
     }
 }
+
+//https://github.com/Ivan-on-Tech-Academy/chainlink_lottery_truffle
