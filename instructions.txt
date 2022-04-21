@@ -31,5 +31,5 @@ Note: had to manually code the onlyOwner modifier. This was because of diff soli
 
 7. We can also do tests (in the tests folder) and this tests will be done on a local blockchain (ganache). Hence,
 deployment will be faster (no blocks need to be mined) and you instantly get test ETH e.g.
-truffle exec scripts/price-consumer-scripts/get-latest-price.js --network kovan
+truffle test
 
